@@ -20,7 +20,7 @@ email: victorklozie@consultant.com
 passw: password
 
 
-### Premium Partners
+### Requirement for completion
 
 - **[SMTP Credentials]**
 - **[Email Notification System on Events: Task Assignments, Submissions and Approvals]**
