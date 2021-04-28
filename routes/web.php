@@ -47,10 +47,14 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/tasks', 'TaskController@index')->name('task');
         Route::get('/tasks/add', 'TaskController@createTask')->name('task.add');
         Route::post('/tasks/add', 'TaskController@createNewTask')->name('task.add.submit');
-        
+        Route::get('/tasks/{task_id}/edit', 'TaskController@editTask')->name('task.edit');
+        Route::post('/tasks/edit', 'TaskController@updateTask')->name('task.update');
+
         Route::get('/tasks/{task_id}', 'TaskController@addNewTaskItem')->name('taskitem');
         Route::get('/tasks/{task_id}/add', 'TaskController@addTaskItem')->name('taskitem.add');
         Route::post('/tasks/{task_id}/add', 'TaskController@createNewTaskItem')->name('taskitem.add.submit');
+        Route::get('/tasks/{task_id}/{item_id}/edit', 'TaskController@editTaskItem')->name('taskitem.edit');
+        Route::post('/task-item/update', 'TaskController@updateTaskItem')->name('taskitem.update');
 
         Route::get('/staff', 'StaffController@index')->name('staff');
         Route::get('/staff/add', 'StaffController@addNewUser')->name('staff.add');

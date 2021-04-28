@@ -12,7 +12,6 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Tasks</li>
               <li class="breadcrumb-item active">All Tasks</li>
             </ol>
           </div>
@@ -30,7 +29,7 @@
               <div class="card card-primary card-outline">
                 <div class="card-header">
                   <h3 class="card-title">Task Board</h3>
-    
+
                   <div class="card-tools">
                     {{-- <div class="input-group input-group-sm">
                       <input type="text" class="form-control" placeholder="Search Mail">
@@ -56,8 +55,12 @@
                         <tr>
                             <td>
                               <div class="icheck-primary">
-                                <a href="#"><i class="fa fa-edit"></i></a>
-                                <a href="{{route('taskitem.add', ['task_id' => $t->id])}}"><i class="fa fa-plus text-success"></i></a>
+                                <a href="{{ route('task.edit', ['task_id' => $t->id]) }}">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                <a href="{{route('taskitem.add', ['task_id' => $t->id])}}">
+                                    <i class="fa fa-plus text-success"></i>
+                                </a>
                               </div>
                             </td>
                             <td class="mailbox-star">
@@ -65,18 +68,24 @@
                                     <span class="badge badge-success">Completed</span>
                                 @elseif($t->status=="In-Progress")
                                     <span class="badge badge-primary">In Progress</span>
-                                @elseif($t->status=="Submited")
-                                    <span class="badge badge-primary">Submited</span>
+                                @elseif($t->status=="Submitted")
+                                    <span class="badge badge-primary">Submitted</span>
                                 @else
                                     <span class="badge badge-warning">{{$t->status}}</span>
                                 @endif
                             </td>
-                            <td class="mailbox-name"><a href="{{ route('taskitem', ['task_id' => $t->id]) }}"><b>{{$t->title}}</b></a></td>
+                            <td class="mailbox-name">
+                                <a href="{{ route('taskitem', ['task_id' => $t->id]) }}"><b>{{$t->title}}</b></a>
+                            </td>
                             <td class="mailbox-subject">
-                                <b>{{\App\Http\Constants\Index::fdt($t->start_date)}}</b> -  <b>{{\App\Http\Constants\Index::fdt($t->delivery_date)}}</b>
+                                <b>{{Carbon\Carbon::parse(strtotime($t->start_date))->format('d M, Y')}}</b> -
+                                <b>{{Carbon\Carbon::parse(strtotime($t->delivery_date))->format('d M, Y') }}</b>
                             </td>
                             <td class="mailbox-attachment"></td>
-                            <td class="mailbox-date">{{$t->created_at->diffForHumans()}} <br> <small>{{$t->created_at->format('d M, Y h:i A')}}</small></td>
+                            <td class="mailbox-date">
+                                {{$t->created_at->diffForHumans()}} <br>
+                                <small>{{$t->created_at->format('d M, Y h:i A')}}</small>
+                            </td>
                             <td>
                                 <div class="icheck-primary">
                                   <a href="#"><i class="fa fa-trash text-danger"></i></a>
@@ -84,7 +93,7 @@
                             </td>
                         </tr>
                         @endforeach
-                        
+
                       </tbody>
                     </table>
                     <!-- /.table -->
