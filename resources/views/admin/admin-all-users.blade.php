@@ -7,7 +7,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>All Users</h1>
+              <div class="d-flex">
+                  <h1>All Users</h1>
+                  <a class="btn btn-primary ml-3" href="{{ route('staff.add') }}">
+                      Add New User
+                  </a>
+              </div>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -48,7 +53,7 @@
                             </div>
                         </form>
                         <table class="table table-bordered">
-                            <thead>                  
+                            <thead>
                               <tr>
                                 <th style="width: 10px">#</th>
                                 <th>Name</th>
@@ -81,9 +86,17 @@
                                     @endif
                                   </td>
                                   <td>
-                                      <a href="#" title="Edit Record"><i class="fa fa-edit"></i></a>
-                                      <a href="#" title="Delete Record"><i class="fa fa-trash"></i></a>
+                                      <a href="{{ route('staff.edit', ['user_id' => $u->id]) }}" title="Edit Record">
+                                          <i class="fa fa-edit"></i>
+                                      </a>
+                                      <a href="#" title="Delete Record" data-toggle="modal"
+                                         data-target="#modalDeleteUser{{ $u->id }}">
+                                          <i class="fa fa-trash"></i>
+                                      </a>
                                   </td>
+                                  @include('partials.modals.delete-user-modal', [
+                                       'modalId' => 'modalDeleteUser' . $u->id, 'id' => $u->id
+                                  ])
                               </tr>
                               @endforeach
                             </tbody>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Task;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Repositories\TaskRepository;
 use App\Http\Repositories\UserRepository;
@@ -119,7 +120,8 @@ class TaskController extends Controller
     }
 
     /**
-     * @throws ValidationException
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function createNewTask(Request $request)
     {
@@ -143,7 +145,8 @@ class TaskController extends Controller
     }
 
     /**
-     * @throws ValidationException
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function updateTask(Request $request)
     {
@@ -169,6 +172,19 @@ class TaskController extends Controller
             $request->session()->flash('success', "Task updated successfully.");
         } catch (Throwable $th) {
             $request->session()->flash('error', "Error occurred while adding new task.");
+        }
+        return redirect()->back();
+    }
+
+    public function deleteTask(Request $request)
+    {
+        $task = $this->tr->find($request->id);
+        try {
+            $task->status = 'In-active';
+            $task->save();
+            $request->session()->flash('success', "Task deleted successfully.");
+        } catch (Throwable $th) {
+            $request->session()->flash('error', "Error occurred while deleting this task.");
         }
         return redirect()->back();
     }
@@ -214,6 +230,19 @@ class TaskController extends Controller
             $request->session()->flash('success', "Task item updated successfully.");
         } catch (Throwable $th) {
             $request->session()->flash('error', "Error occurred while updating this task item.");
+        }
+        return redirect()->back();
+    }
+
+    public function deleteTaskItem(Request $request)
+    {
+        $item = $this->tir->find($request->id);
+        try {
+            $item->status = 'In-active';
+            $item->save();
+            $request->session()->flash('success', "Task Item deleted successfully.");
+        } catch (Throwable $th) {
+            $request->session()->flash('error', "Error occurred while deleting this task item.");
         }
         return redirect()->back();
     }

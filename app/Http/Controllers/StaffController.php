@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
 use App\User;
+use Throwable;
 
 class StaffController extends Controller
 {
@@ -32,7 +33,40 @@ class StaffController extends Controller
     }
 
     public function addNewUser(Request $request) {
-        return view('admin.admin-add-user');
+        return view('admin.admin-add-user', ['user' => null]);
+    }
+
+    public function editUser(Request $request, $user_id)
+    {
+        $user = $this->userRepository->find($user_id);
+        if(!isset($user)) abort(404);
+        return view('admin.admin-add-user', ['user' => $user]);
+    }
+
+    public function updateUser(Request $request) {
+        $this->validate($request, [
+            'is_admin'      => 'required',
+            'name'          => 'required|string|min:5',
+            'email'         => 'required',
+            'phone_number'  => 'required|min:11|max:14',
+        ]);
+
+        try {
+            $this->userRepository->update(
+                [
+                    'is_admin' => $request->is_admin,
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'phone_number' => $request->phone_number,
+                    'github_link' => $request->github_link
+                ],
+                ['id' => $request->id]
+            );
+            $request->session()->flash('success', "User updated successfully.");
+        } catch (Throwable $th) {
+            $request->session()->flash('error', "Error occurred while updating this user.");
+        }
+        return redirect()->back();
     }
 
     public function createNewUser(Request $request) {
@@ -45,7 +79,7 @@ class StaffController extends Controller
 
         $data = $request->only(['name', 'email', 'phone_number', 'password']);
         $data['password'] = Hash::make($data['password']);
-        
+
         try {
             $this->userRepository->insert($data);
             $request->session()->flash('success', "User registered successfully.");
