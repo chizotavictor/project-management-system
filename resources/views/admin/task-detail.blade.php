@@ -58,43 +58,45 @@
                                        class="btn btn-default btn-sm"><i class="fas fa-plus"></i>
                                     </a>
                                 </div>
-                            </div>
 
-                            <div class="col-12">
+                                <div class="col-12">
                                 @foreach($task->items as $item)
-                                <div class="post">
-                                    <div class="user-block">
-                                      <img class="img-circle img-bordered-sm" src="{{ asset('dist/img/avatar.png')}}"
-                                           alt="user image">
-                                      <span class="username">
-                                        <a href="#">{{$item->designator->name}}, {{$item->designator->email}}</a>
-                                      </span>
-                                      <span class="description">Shared publicly - {{$item->created_at->format('d M. Y h:i A')}}</span>
-                                    </div>
+                                     <div class="post">
+                                         <div class="user-block">
+                                             <img class="img-circle img-bordered-sm" src="{{ asset('dist/img/avatar.png')}}"
+                                                  alt="user image">
+                                             <span class="username">
+                                                 <a href="#">{{$item->designator->name}}, {{$item->designator->email}}</a>
+                                             </span>
+                                             <span class="description">
+                                                 Shared publicly - {{$item->created_at->format('d M. Y h:i A')}}
+                                             </span>
+                                         </div>
 
-                                    <h6><b>{{$item->task_indicator}}</b></h6>
-                                    <!-- /.user-block -->
-                                    {!! $item->description !!}
-                                    @if($item->status !== 'In-active')
-                                    <div>
-                                        <a href="#" class="link-black text-sm">
-                                            <i class="fas fa-link mr-1"></i> Task Issues
-                                        </a>
-                                        <a href="{{ route('taskitem.edit', ['task_id' => $item->task_id, 'item_id' => $item->id]) }}"
-                                           class="link-black text-sm ml-3">
-                                            <i class="fas fa-edit mr-1"></i> Edit
-                                        </a>
-                                        <a href="#" class="link-black text-sm ml-3"
-                                           data-toggle="modal" data-target="#modalDeleteTaskItem{{ $item->id }}">
-                                            <i class="fas fa-trash-alt mr-1"></i> Delete
-                                        </a>
-                                    </div>
-                                    @endif
-                                </div>
-                                @include('partials.modals.delete-task-item-modal', [
-                                    'modalId' => 'modalDeleteTaskItem' . $item->id, 'id' => $item->id
-                                ])
+                                         <h6><b>{{$item->task_indicator}}</b></h6>
+                                            <!-- /.user-block -->
+                                         {!! $item->description !!}
+                                         @if($item->status !== 'In-active')
+                                             <div>
+                                                 <a href="{{ route('issues', $item->task_id) }}" class="link-black text-sm">
+                                                     <i class="fas fa-link mr-1"></i> Task Issues
+                                                 </a>
+                                                 <a href="{{ route('taskitem.edit', ['task_id' => $item->task_id, 'item_id' => $item->id]) }}"
+                                                    class="link-black text-sm ml-3">
+                                                    <i class="fas fa-edit mr-1"></i> Edit
+                                                 </a>
+                                                 <a href="#" class="link-black text-sm ml-3"
+                                                    data-toggle="modal" data-target="#modalDeleteTaskItem{{ $item->id }}">
+                                                     <i class="fas fa-trash-alt mr-1"></i> Delete
+                                                 </a>
+                                             </div>
+                                         @endif
+                                     </div>
+                                     @include('partials.modals.delete-task-item-modal', [
+                                         'modalId' => 'modalDeleteTaskItem' . $item->id, 'id' => $item->id
+                                     ])
                                 @endforeach
+                            </div>
                             </div>
                         </div>
 

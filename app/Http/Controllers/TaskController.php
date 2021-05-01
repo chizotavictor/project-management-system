@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Repositories\TaskItemIssueRepository;
+use App\Notifications\TaskItemIssueNotification;
 use App\Task;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -9,6 +11,8 @@ use App\Http\Repositories\TaskRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\TaskItemRepository;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -17,11 +21,13 @@ class TaskController extends Controller
     private $tr;
     private $ur;
     private $tir;
+    private $tsr;
 
     public function __construct() {
         $this->tr = new TaskRepository;
         $this->ur = new UserRepository;
         $this->tir = new TaskItemRepository;
+        $this->tsr = new TaskItemIssueRepository;
     }
 
     public function index(Request $request, Task $t)
@@ -147,6 +153,7 @@ class TaskController extends Controller
     /**
      * @param Request $request
      * @return RedirectResponse
+     * @throws ValidationException
      */
     public function updateTask(Request $request)
     {
@@ -299,5 +306,40 @@ class TaskController extends Controller
     private function formatDate($str) {
         $fd = Carbon::parse($str)->format('Y/d/m');
         return $fd;
+    }
+
+    public function allIssues($item_id)
+    {
+        $issues = $this->tsr->findWhere(['task_item_id' => $item_id]);
+        return view('admin.all-issues', compact('item_id', 'issues'));
+    }
+
+    public function addIssue($item_id)
+    {
+        return view('admin.add-issue', compact('item_id'));
+    }
+
+    public function createNewIssue(Request $request)
+    {
+        DB::beginTransaction();
+        $this->validate($request, [
+            'comment'   => 'required',
+            'task_item_id'   => 'required|integer',
+        ]);
+
+        $designator = $this->tir->find($request->task_item_id)->designator;
+        //dd($designator);
+
+        try {
+            $data = $request->except(['_token']);
+            $this->tsr->insert($data);
+            Notification::send($designator, new TaskItemIssueNotification());
+            DB::commit();
+            $request->session()->flash('success', "Task item issue created successfully.");
+        } catch (Throwable $th) {
+            DB::rollBack();
+            $request->session()->flash('error', "Error occurred while adding new task item issue.");
+        }
+        return redirect()->back();
     }
 }

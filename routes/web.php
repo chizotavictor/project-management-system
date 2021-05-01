@@ -64,6 +64,11 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/staff/{user_id}/edit', 'StaffController@editUser')->name('staff.edit');
         Route::post('/staff/update', 'StaffController@updateUser')->name('staff.update');
         Route::post('/staff/delete', 'StaffController@deleteUser')->name('staff.delete');
+
+        Route::get('/tasks/task-item/{item_id}/issues', 'TaskController@allIssues')->name('issues');
+        Route::get('/tasks/task-item/{item_id}/issues/add', 'TaskController@addIssue')->name('issue.add');
+        Route::post('/tasks/task-item/issues/add', 'TaskController@createNewIssue')->name('issue.create');
+
     });
 });
 
