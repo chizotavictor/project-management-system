@@ -1,5 +1,5 @@
 <div class="modal fade zoom" tabindex="-1" id="{{ $modalId }}">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">Delete Task</h3>

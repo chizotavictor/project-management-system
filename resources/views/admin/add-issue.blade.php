@@ -7,15 +7,19 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Add New Task Item Issue</h1>
+                        <h1>{{ $issue ? 'Edit' : 'Add New' }} Task Item Issue</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="{{route('home')}}">Home</a></li>
                             <li class="breadcrumb-item active"><a href="{{ route('task') }}">Tasks</a></li>
-                            <li class="breadcrumb-item active"><a href="{{ route('taskitem', $item_id) }}">Task Items</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('issues', $item_id) }}">Issues</a></li>
-                            <li class="breadcrumb-item active">Add Issue</li>
+                            <li class="breadcrumb-item active">
+                                <a href="{{ route('taskitem', $issue ? $issue->task_item_id : $item_id) }}">Task Items</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('issues', $issue ? $issue->task_item_id : $item_id) }}">Issues</a>
+                            </li>
+                            <li class="breadcrumb-item active">Issue</li>
                         </ol>
                     </div>
                 </div>
@@ -47,18 +51,19 @@
                         <!-- general form elements -->
                         <div class="card card-primary">
                             <div class="card-header">
-                                <h3 class="card-title">Add New Issue</h3>
+                                <h3 class="card-title">{{ $issue ? 'Edit' : 'Add New' }} Issue</h3>
                             </div>
                             <!-- /.card-header -->
                             <!-- form start -->
-                            <form role="form" action="{{ route('issue.create')}}" method="POST">
+                            <form role="form" action="{{ $issue ? route('issue.update') : route('issue.create')}}" method="POST">
                                 @csrf
-                                <input type="hidden" value="{{ $item_id }}" name="task_item_id">
+                                <input type="hidden" value="{{ $issue ? $issue->id : ''}}" name="id">
+                                <input type="hidden" value="{{ $issue ? $issue->task_item_id : $item_id }}" name="task_item_id">
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label for="name" class="">Comment</label>
                                         <textarea class="textarea @error('comment') is-invalid @enderror" name="comment"
-                                                  required autofocus></textarea>
+                                                  required autofocus>{{ $issue ? $issue->comment : old('comment') }}</textarea>
                                         @error('comment')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>

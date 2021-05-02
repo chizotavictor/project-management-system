@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Constants\Index;
 use App\Http\Repositories\TaskItemIssueRepository;
+use App\Notifications\TaskItemIssueClosedNotification;
 use App\Notifications\TaskItemIssueNotification;
+use App\Notifications\TaskItemIssueResolvedNotification;
 use App\Task;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -91,7 +94,7 @@ class TaskController extends Controller
         $r = $this->tr->findOne(['id' => $request->task_id, 'designator_id' => auth()->user()->id]);
         if(!isset($r))
             return redirect()->back();
-        $this->tr->update(['status' => 'In-Progress'], ['id' => $request->task_id]);
+        $this->tr->update(['status' => Index::IN_PROGRESS], ['id' => $request->task_id]);
         $request->session()->flash('success', 'Task started successfully');
         return redirect()->back();
     }
@@ -105,7 +108,7 @@ class TaskController extends Controller
         $r = $this->tir->findOne(['id' => $request->sub_task_id, 'designator_id' => auth()->user()->id]);
         if(!isset($r))
             return redirect()->back();
-        $this->tir->update(['status' => 'In-Progress'], ['id' => $request->sub_task_id]);
+        $this->tir->update(['status' => Index::IN_PROGRESS], ['id' => $request->sub_task_id]);
         $request->session()->flash('success', 'Sub-Task started successfully');
         return redirect()->back();
     }
@@ -128,6 +131,7 @@ class TaskController extends Controller
     /**
      * @param Request $request
      * @return RedirectResponse
+     * @throws ValidationException
      */
     public function createNewTask(Request $request)
     {
@@ -187,7 +191,7 @@ class TaskController extends Controller
     {
         $task = $this->tr->find($request->id);
         try {
-            $task->status = 'In-active';
+            $task->status = Index::IN_ACTIVE;
             $task->save();
             $request->session()->flash('success', "Task deleted successfully.");
         } catch (Throwable $th) {
@@ -245,7 +249,7 @@ class TaskController extends Controller
     {
         $item = $this->tir->find($request->id);
         try {
-            $item->status = 'In-active';
+            $item->status = Index::IN_ACTIVE;
             $item->save();
             $request->session()->flash('success', "Task Item deleted successfully.");
         } catch (Throwable $th) {
@@ -316,7 +320,14 @@ class TaskController extends Controller
 
     public function addIssue($item_id)
     {
-        return view('admin.add-issue', compact('item_id'));
+        $issue = null;
+        return view('admin.add-issue', compact('item_id', 'issue'));
+    }
+
+    public function editIssue($issue_id)
+    {
+        $issue = $this->tsr->findOne(['id' => $issue_id]);
+        return view('admin.add-issue', compact('issue'));
     }
 
     public function createNewIssue(Request $request)
@@ -327,15 +338,89 @@ class TaskController extends Controller
             'task_item_id'   => 'required|integer',
         ]);
 
-        $designator = $this->tir->find($request->task_item_id)->designator;
-        //dd($designator);
+        $item = $this->tir->find($request->task_item_id);
+        $designator = $item->designator;
+        $taskTitle = $item->task->title;
 
         try {
             $data = $request->except(['_token']);
             $this->tsr->insert($data);
-            Notification::send($designator, new TaskItemIssueNotification());
+            Notification::send($designator, new TaskItemIssueNotification($taskTitle));
             DB::commit();
             $request->session()->flash('success', "Task item issue created successfully.");
+        } catch (Throwable $th) {
+            DB::rollBack();
+            $request->session()->flash('error', "Error occurred while adding new task item issue.");
+        }
+        return redirect()->back();
+    }
+
+    public function updateIssue(Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required',
+            'comment' => 'required',
+            'task_item_id' => 'required|integer',
+        ]);
+
+        try {
+            $this->tsr->update(
+                ['comment' => $request->comment, 'task_item_id' => $request->task_item_id,],
+                ['id' => $request->id]
+            );
+            $request->session()->flash('success', "Task item issue updated successfully.");
+        } catch (Throwable $th) {
+            $request->session()->flash('error', "Error occurred while updating this task issue.");
+        }
+        return redirect()->back();
+    }
+
+    public function viewUserIssues($item_id)
+    {
+        $issues = $this->tsr->findWhere(['task_item_id' => $item_id]);
+        return view('user.all-issues', compact('item_id', 'issues'));
+    }
+
+    public function resolveIssue(Request  $request)
+    {
+        DB::beginTransaction();
+        $this->validate($request, [
+            'id' => 'required',
+        ]);
+
+        $issue = $this->tsr->find($request->id);
+        $taskTitle = $issue->taskItem->task->title;
+        $users = $this->ur->findWhere(['is_admin' => 1]);
+
+        try {
+            $this->tsr->update(['status' => Index::IN_REVIEW], ['id' => $request->id]);
+            foreach ($users as $user) {
+                Notification::send($user, new TaskItemIssueResolvedNotification($taskTitle));
+            }
+            DB::commit();
+            $request->session()->flash('success', "Admin has been notified successfully.");
+        } catch (Throwable $th) {
+            DB::rollBack();
+            $request->session()->flash('error', "Error occurred while adding new task item issue.");
+        }
+        return redirect()->back();
+    }
+
+    public function closeIssue(Request $request)
+    {
+        DB::beginTransaction();
+        $this->validate($request, [
+            'id' => 'required',
+        ]);
+
+        $item = $this->tsr->find($request->id)->taskItem;
+        $designator = $item->designator;
+        $taskTitle = $item->task->title;
+        try {
+            $this->tsr->update(['status' => Index::CLOSED], ['id' => $request->id]);
+            Notification::send($designator, new TaskItemIssueClosedNotification($taskTitle));
+            DB::commit();
+            $request->session()->flash('success', "Task item issue was closed successfully.");
         } catch (Throwable $th) {
             DB::rollBack();
             $request->session()->flash('error', "Error occurred while adding new task item issue.");

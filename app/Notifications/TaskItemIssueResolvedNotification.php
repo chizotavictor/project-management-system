@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TaskItemIssueNotification extends Notification
+class TaskItemIssueResolvedNotification extends Notification
 {
     use Queueable;
 
@@ -43,8 +43,8 @@ class TaskItemIssueNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Task Item Issue')
-            ->view('vendor.notifications.task-item-issue', [
+            ->subject('Task Item Issue Resolved')
+            ->view('vendor.notifications.task-item-resolve', [
                 'fullName' => $notifiable->name, 'taskTitle' => $this->taskTitle
             ]);
     }

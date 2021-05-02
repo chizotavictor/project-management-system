@@ -8,25 +8,21 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <div class="d-flex">
-                        <h1>All Task Item Issues</h1>
-                        <a class="btn btn-primary ml-3" href="{{ route('issue.add', $item_id) }}">
-                            Add New Issue
-                        </a>
+                        <h1>Task Item Issues</h1>
                     </div>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{route('home')}}">Home</a></li>
-                        <li class="breadcrumb-item active"><a href="{{ route('task') }}">Tasks</a></li>
-                        <li class="breadcrumb-item active"><a href="{{ route('taskitem', $item_id) }}">Task Items</a></li>
-                        <li class="breadcrumb-item active">All Issues</li>
+                        <li class="breadcrumb-item active"><a href="{{ route('user.task') }}">Tasks</a></li>
+                        <li class="breadcrumb-item active"><a href="{{ route('user.taskitem', $item_id) }}">Task Item</a></li>
+                        <li class="breadcrumb-item">All Issues</li>
                     </ol>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
 
-    <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
             <div class="row">
@@ -75,32 +71,20 @@
                                         </div>
                                         @if($issue->status == \App\Http\Constants\Index::OPEN)
                                             <div>
-                                                <a href="{{ route('issue.edit', $issue->id) }}"
-                                                   class="link-black text-sm ml-3">
-                                                    <i class="fas fa-edit mr-1"></i> Edit
-                                                </a>
                                                 <a href="#" class="link-black text-sm ml-3"
-                                                   data-toggle="modal" data-target="#modalDeleteTaskItemIssue{{ $issue->id }}">
-                                                    <i class="fas fa-trash-alt mr-1"></i> Delete
-                                                </a>
-                                                <a href="#" class="link-black text-sm ml-3"
-                                                   data-toggle="modal" data-target="#modalCloseIssue{{ $issue->id }}">
-                                                    <i class="fas fa-times mr-1"></i> Close
+                                                   data-toggle="modal" data-target="#modalMarkAsDone{{ $issue->id }}">
+                                                    <i class="fas fa-check mr-1"></i> Mark as done
                                                 </a>
                                             </div>
+                                            @include('partials.modals.mark-as-done-modal', [
+                                                 'modalId' => 'modalMarkAsDone' . $issue->id, 'id' => $issue->id
+                                             ])
                                         @elseif($issue->status == \App\Http\Constants\Index::IN_REVIEW)
                                             <span class="badge badge-info">{{ $issue->status }}</span>
-                                            <a href="#" class="link-black text-sm ml-3"
-                                               data-toggle="modal" data-target="#modalCloseIssue{{ $issue->id }}">
-                                                <i class="fas fa-times mr-1"></i> Close
-                                            </a>
                                         @else
                                             <span class="badge badge-danger">{{ $issue->status }}</span>
                                         @endif
                                     </div>
-                                    @include('partials.modals.close-issue-modal', [
-                                        'modalId' => 'modalCloseIssue' . $issue->id, 'id' => $issue->id
-                                    ])
                                 @endforeach
                             </div>
                         </div>
