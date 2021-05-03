@@ -8,14 +8,12 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <div class="d-flex">
-                        <h1>Task Item Issues</h1>
+                        <h1>All Issues</h1>
                     </div>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{route('home')}}">Home</a></li>
-                        <li class="breadcrumb-item active"><a href="{{ route('user.task') }}">Tasks</a></li>
-                        <li class="breadcrumb-item active"><a href="{{ route('user.taskitem', $item_id) }}">Task Item</a></li>
                         <li class="breadcrumb-item">All Issues</li>
                     </ol>
                 </div>
@@ -48,7 +46,7 @@
                 <!-- general form elements -->
                 <div class="card card-primary card-outline">
                     <div class="card-header">
-                        <h3 class="card-title">Issue Board</h3>
+                        <h3 class="card-title">Issues Board</h3>
                     </div>
 
                     <div class="card-footer bg-white">

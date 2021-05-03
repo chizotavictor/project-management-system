@@ -39,7 +39,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/subtasks/{subtask_id}', 'TaskController@viewUserAssignedSubTask')->name('user.subtaskitem');
         Route::post('/subtask/start', 'TaskController@startSubAssignedTask')->name('subtask.start');
 
-        Route::get('/tasks/task-item/{item_id}/issues', 'TaskController@viewUserIssues')->name('user.issues');
+        Route::get('/tasks/task-item/issues', 'TaskController@viewUserAllIssues')->name('user.all-issues');
+        Route::get('/tasks/task-item/{item_id}/issues', 'TaskController@viewUserTaskItemIssues')->name('user.issues');
         Route::post('/tasks/task-item/issues/closed', 'TaskController@closeIssue')->name('user.issue.close');
         Route::post('/tasks/task-item/issues/resolve', 'TaskController@resolveIssue')->name('user.issue.resolve');
     });
@@ -69,7 +70,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/staff/update', 'StaffController@updateUser')->name('staff.update');
         Route::post('/staff/delete', 'StaffController@deleteUser')->name('staff.delete');
 
-        Route::get('/tasks/task-item/{item_id}/issues', 'TaskController@allIssues')->name('issues');
+        Route::get('/tasks/task-item/{task_id}/{item_id}/issues', 'TaskController@allIssues')->name('issues');
         Route::get('/tasks/task-item/{item_id}/issues/add', 'TaskController@addIssue')->name('issue.add');
         Route::get('/tasks/task-item/issues/{issue_id}/edit', 'TaskController@editIssue')->name('issue.edit');
         Route::post('/tasks/task-item/issues/update', 'TaskController@updateIssue')->name('issue.update');

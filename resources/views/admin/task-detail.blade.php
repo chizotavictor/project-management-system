@@ -78,7 +78,8 @@
                                          {!! $item->description !!}
                                          @if($item->status !== 'In-active')
                                              <div>
-                                                 <a href="{{ route('issues', $item->task_id) }}" class="link-black text-sm">
+                                                 <a href="{{ route('issues', ['item_id' => $item->id, 'task_id' => $item->task_id]) }}"
+                                                    class="link-black text-sm">
                                                      <i class="fas fa-link mr-1"></i> Task Issues
                                                  </a>
                                                  <a href="{{ route('taskitem.edit', ['task_id' => $item->task_id, 'item_id' => $item->id]) }}"

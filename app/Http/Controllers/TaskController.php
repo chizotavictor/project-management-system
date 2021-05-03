@@ -8,6 +8,7 @@ use App\Notifications\TaskItemIssueClosedNotification;
 use App\Notifications\TaskItemIssueNotification;
 use App\Notifications\TaskItemIssueResolvedNotification;
 use App\Task;
+use App\TaskItemIssue;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Repositories\TaskRepository;
@@ -285,7 +286,7 @@ class TaskController extends Controller
         if(!isset($r))
             abort(404);
         $staff = $this->ur->findWhere(['is_admin' => 0]);
-        return view('admin.add-taskitem')->with(['task' => $r, 'staff' => $staff]);
+        return view('admin.add-taskitem')->with(['task' => $r, 'staff' => $staff, 'item' => null]);
     }
 
     public function createNewTaskItem(Request $request)
@@ -312,22 +313,24 @@ class TaskController extends Controller
         return $fd;
     }
 
-    public function allIssues($item_id)
+    public function allIssues($task_id, $item_id)
     {
         $issues = $this->tsr->findWhere(['task_item_id' => $item_id]);
-        return view('admin.all-issues', compact('item_id', 'issues'));
+        return view('admin.all-issues', compact('item_id', 'issues', 'task_id'));
     }
 
     public function addIssue($item_id)
     {
         $issue = null;
-        return view('admin.add-issue', compact('item_id', 'issue'));
+        $item = $this->tir->findOne(['id' => $item_id]);
+        return view('admin.add-issue', compact('item', 'issue'));
     }
 
     public function editIssue($issue_id)
     {
         $issue = $this->tsr->findOne(['id' => $issue_id]);
-        return view('admin.add-issue', compact('issue'));
+        $item = $issue->taskItem;
+        return view('admin.add-issue', compact('issue', 'item'));
     }
 
     public function createNewIssue(Request $request)
@@ -375,10 +378,10 @@ class TaskController extends Controller
         return redirect()->back();
     }
 
-    public function viewUserIssues($item_id)
+    public function viewUserTaskItemIssues($item_id)
     {
         $issues = $this->tsr->findWhere(['task_item_id' => $item_id]);
-        return view('user.all-issues', compact('item_id', 'issues'));
+        return view('user.all-task-item-issues', compact('item_id', 'issues'));
     }
 
     public function resolveIssue(Request  $request)
@@ -426,5 +429,14 @@ class TaskController extends Controller
             $request->session()->flash('error', "Error occurred while adding new task item issue.");
         }
         return redirect()->back();
+    }
+
+    public function viewUserAllIssues()
+    {
+        $user_id = auth()->user()->id;
+        $issues = TaskItemIssue::select('task_item_issues.*')
+            ->join('task_items', 'task_item_issues.task_item_id', '=', 'task_items.id')
+            ->where('designator_id', $user_id)->get();
+        return view('user.all-issues', compact('issues'));
     }
 }

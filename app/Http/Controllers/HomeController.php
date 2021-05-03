@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Constants\Index;
+use App\TaskItemIssue;
 use Illuminate\Http\Request;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\TaskRepository;
@@ -42,7 +44,11 @@ class HomeController extends Controller
                 'totalAdministrator'        => $this->totalAdministrator(),
                 'totalUser'                 => $this->totalUser(),
                 'commissioned_users'        => $this->comissionedUsers(),
-                'uncomissionedUsers'        => $this->uncomissionedUsers()
+                'uncomissionedUsers'        => $this->uncomissionedUsers(),
+                'totalUserIssue'            => $this->totalUserIssues(),
+                'totalUserInReviewIssues'   => $this->totalUserInReviewIssues(),
+                'totalUserOpenIssues'       => $this->totalUserOpenIssues(),
+                'totalUserClosedIssues'     => $this->totalUserClosedIssues()
             ]);
         else
             return view('user-home')->with([
@@ -54,6 +60,10 @@ class HomeController extends Controller
                 'totalSubCompletedTask'     => $this->totalSubUserCompletedTask(),
                 'totalSubPendingTask'       => $this->totalSubUserPendingTask(),
                 'totalSubInprogressTask'    => $this->totalSubUserInprogressTask(),
+                'totalUserIssue'            => $this->totalUserIssues(),
+                'totalUserInReviewIssues'   => $this->totalUserInReviewIssues(),
+                'totalUserOpenIssues'       => $this->totalUserOpenIssues(),
+                'totalUserClosedIssues'     => $this->totalUserClosedIssues()
             ]);
     }
 
@@ -88,12 +98,12 @@ class HomeController extends Controller
         return sizeof($this->tr->findwhere(['status' => 'Completed']));
     }
 
-    public function totalUserCompletedTask() 
+    public function totalUserCompletedTask()
     {
         return sizeof($this->tr->findwhere(['status' => 'Completed', 'designator_id' => $this->getUserId()]));
     }
 
-    public function totalSubUserCompletedTask() 
+    public function totalSubUserCompletedTask()
     {
         return sizeof($this->tir->findwhere(['status' => 'Completed', 'designator_id' => $this->getUserId()]));
     }
@@ -118,12 +128,12 @@ class HomeController extends Controller
         return sizeof($this->tr->findwhere(['status' => 'In-Progress']));
     }
 
-    public function totalUserInprogressTask() 
+    public function totalUserInprogressTask()
     {
         return sizeof($this->tr->findwhere(['status' => 'In-Progress', 'designator_id' => $this->getUserId()]));
     }
 
-    public function totalSubUserInprogressTask() 
+    public function totalSubUserInprogressTask()
     {
         return sizeof($this->tir->findwhere(['status' => 'In-Progress', 'designator_id' => $this->getUserId()]));
     }
@@ -161,6 +171,38 @@ class HomeController extends Controller
         if($totalUsers == 0) {
             return 0;
         }
-        return $totalUsers - $this->comissionedUsers(); 
+        return $totalUsers - $this->comissionedUsers();
+    }
+
+    public function userIssues()
+    {
+        if(auth()->user()->is_admin == "0") {
+            $user_id = auth()->user()->id;
+            return TaskItemIssue::select('task_item_issues.id')
+                ->join('task_items', 'task_item_issues.task_item_id', '=', 'task_items.id')
+                ->where('designator_id', $user_id);
+        } else {
+            return TaskItemIssue::select('task_item_issues.id');
+        }
+
+    }
+    public function totalUserIssues()
+    {
+        return $this->userIssues()->count();
+    }
+
+    public function totalUserInReviewIssues()
+    {
+        return $this->userIssues()->where(['task_item_issues.status' => Index::IN_REVIEW])->count();
+    }
+
+    public function totalUserOpenIssues()
+    {
+        return $this->userIssues()->where(['task_item_issues.status' => Index::OPEN])->count();
+    }
+
+    public function totalUserClosedIssues()
+    {
+        return $this->userIssues()->where(['task_item_issues.status' => Index::CLOSED])->count();
     }
 }

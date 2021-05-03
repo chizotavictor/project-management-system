@@ -14,10 +14,12 @@
                             <li class="breadcrumb-item"><a href="{{route('home')}}">Home</a></li>
                             <li class="breadcrumb-item active"><a href="{{ route('task') }}">Tasks</a></li>
                             <li class="breadcrumb-item active">
-                                <a href="{{ route('taskitem', $issue ? $issue->task_item_id : $item_id) }}">Task Items</a>
+                                <a href="{{ route('taskitem', $issue ? $issue->taskItem->task_id : $item->task_id) }}">Task Items</a>
                             </li>
                             <li class="breadcrumb-item">
-                                <a href="{{ route('issues', $issue ? $issue->task_item_id : $item_id) }}">Issues</a>
+                                <a href="{{ route('issues', $issue ?
+                                    ['task_id' => $issue->taskItem->id, 'item_id' => $issue->task_item_id] :
+                                    ['task_id' => $item->task_id, 'item_id' => $item->id]) }}">Issues</a>
                             </li>
                             <li class="breadcrumb-item active">Issue</li>
                         </ol>
@@ -58,7 +60,7 @@
                             <form role="form" action="{{ $issue ? route('issue.update') : route('issue.create')}}" method="POST">
                                 @csrf
                                 <input type="hidden" value="{{ $issue ? $issue->id : ''}}" name="id">
-                                <input type="hidden" value="{{ $issue ? $issue->task_item_id : $item_id }}" name="task_item_id">
+                                <input type="hidden" value="{{ $issue ? $issue->task_item_id : $item->id }}" name="task_item_id">
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label for="name" class="">Comment</label>
