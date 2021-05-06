@@ -96,17 +96,7 @@
                                                     <small>{{$t->created_at->format('d M, Y h:i A')}}</small>
                                                 </td>
                                                 <td>
-                                                    @if($t->status == "In-Progress")
-                                                        <div class="icheck-primary">
-                                                            <form action="#" method="POST">
-                                                                @csrf
-                                                                <input type="hidden" name="task_id" value="{{$t->id}}">
-                                                                <button title="Click to notify admin on submission">
-                                                                    <i class="fa fa-bell text-success"></i>
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    @endif
+                                                   
                                                     @if($t->status == \App\Http\Constants\Index::IN_ACTIVE &&
                                                         $t->status == \App\Http\Constants\Index::IN_PROGRESS)
                                                         <div class="icheck-primary">

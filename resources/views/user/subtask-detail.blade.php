@@ -90,27 +90,26 @@
                                 @else
                                 <span class="badge badge-primary">{{$task->status}}</span>
                                 @endif
-                                <a href="#" class="link-black text-sm"><i class="fas fa-link mr-1"></i> Task Issues</a>
-                                @if ($task->status== "Completed")
+                                <a href="{{ route('user.issues', $task->id) }}" class="link-black text-sm"><i class="fas fa-link mr-1"></i> Task Issues ({{ sizeof($task->issues) }})</a>
+                                @if ($task->status== "Pending")
                                     <form action="{{ route('subtask.start') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="sub_task_id" value="{{$task->id}}">
                                     <button title="Click here to Start Task" class="text-sm"><i class="fa fa-play text-primary"></i> Start Sub Task</button>
                                     </form>
-                                @else
-                                <button class="text-sm"><i class="fa fa-bell text-success"></i> Notify Admin</button>
+                                @endif
+                                @if ( $task->status == "In-Progress")
+                                    <form action="{{ route('submit-task') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class=" text-sm text-success"><i class="fa fa-check"></i> Submit task</button>
+                                        <input type="hidden" name="task_item_id" value="{{$task->id}}">
+                                    </form>
                                 @endif
                             </p>
                         </div>
                         {{-- <hr> --}}
                         {{-- @endforeach --}}
                     </div>
-                </div>
-
-                <!-- /.card-footer -->
-                <div class="card-footer">
-                    <button type="button" class="btn btn-primary"><i class="fas fa-bell"></i> Notify Admin</button>
-                    {{-- <button type="button" class="btn btn-default"><i class="far fa-trash-alt"></i> Delete</button> --}}
                 </div>
                 <!-- /.card-footer -->
                 </div>

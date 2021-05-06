@@ -26,4 +26,8 @@ class TaskItem extends Model
     public function approved() {
         return $this->belongsTo(\App\User::class, 'approved_by');
     }
+
+    public function issues() {
+        return $this->hasMany(\App\TaskItemIssue::class);
+    }
 }

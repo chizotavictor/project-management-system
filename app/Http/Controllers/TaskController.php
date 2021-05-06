@@ -65,11 +65,63 @@ class TaskController extends Controller
         return view('user.task-list')->with(['ts' => $ts]);
     }
 
+    public function viewTaskIssueDetail(Request $request)
+    {
+
+    }
+
+    public function submitTaskItem(Request $request)
+    {
+        $this->validate($request, [
+            'task_item_id' => 'required|integer'
+        ]);
+        $isExistsInTaskRrd = $this->tir->findOne(['id' => $request->task_item_id, 'designator_id' => auth()->user()->id]);
+        if(isset($isExistsInTaskRrd)) {
+            $this->tir->update(['status' => Index::SUBMITTED], ['id' => $request->task_item_id]);
+        }
+        return redirect()->back();
+    }
+
+    public function submitTask(Request $request)
+    {
+        $this->validate($request, [
+            'task_id' => 'required|integer'
+        ]);
+        $isExistsInTaskRrd = $this->tr->findOne(['id' => $request->task_id, 'designator_id' => auth()->user()->id]);
+        if(isset($isExistsInTaskRrd)) {
+            $this->tr->update(['status' => Index::SUBMITTED], ['id' => $request->task_id]);
+        }
+
+        return redirect()->back();
+    }
+
+    public function alterTaskItemStatus(Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required|integer',
+            'status' => 'required'
+        ]);
+        $this->tir->update(['status' => $request->status], ['id' => $request->id]);
+        $request->session()->flash('success', "Task item status set to: " . $request->status);
+        return redirect()->back();
+    }
+
+    public function alterTaskStatus(Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required|integer',
+            'status' => 'required'
+        ]);
+        $this->tr->update(['status' => $request->status], ['id' => $request->id]);
+        $request->session()->flash('success', "Task status set to: " . $request->status);
+        return redirect()->back();
+    }
+
     public function userAssignedSubTasks(Request $request)
     {
         $ts = $this->tir->findWherePaginateWithDistinct([
             'designator_id' => auth()->user()->id],
-            ['task.initiator', 'designator']
+            ['task.initiator', 'designator', 'issues']
         );
 
         return view('user.subtask-list')->with(['ts' => $ts]);

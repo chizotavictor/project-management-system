@@ -41,7 +41,7 @@
             </li>
         </ul>
 
-        <!-- SEARCH FORM -->
+        {{-- <!-- SEARCH FORM -->
         <form class="form-inline ml-3">
             <div class="input-group input-group-sm">
                 <input class="form-control form-control-navbar" type="search" placeholder="Search Task" aria-label="Search">
@@ -51,7 +51,7 @@
                     </button>
                 </div>
             </div>
-        </form>
+        </form> --}}
     </nav>
     <!-- /.navbar -->
 
@@ -110,14 +110,14 @@
                             </a>
                         </li>
                     @else
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-chart-pie"></i>
                                 <p>
                                     Staff Performance<i class="right fas fa-users"></i>
                                 </p>
                             </a>
-                        </li>
+                        </li> --}}
                         <li class="nav-item has-treeview">
                             <a href="#" class="nav-link {{ (Route::currentRouteName() == 'staff' || Route::currentRouteName() == 'staff.add') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-users"></i>

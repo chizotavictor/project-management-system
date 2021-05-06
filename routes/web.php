@@ -34,12 +34,15 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/tasks', 'TaskController@userAssignedTasks')->name('user.task');
         Route::get('/task/{status}', 'TaskController@userAssignedTasksByStatus')->name('user.task.status');
         Route::get('/tasks/{task_id}', 'TaskController@viewUserAssignedTask')->name('user.taskitem');
+        Route::post('/tasks/item-submit', 'TaskController@submitTaskItem')->name('submit-task');
+        Route::post('/tasks/task-submit', 'TaskController@submitTask')->name('user.submit-task');
         Route::post('/tasks/start', 'TaskController@startAssignedTask')->name('task.start');
         Route::get('/subtasks', 'TaskController@userAssignedSubTasks')->name('user.substask');
         Route::get('/subtasks/{subtask_id}', 'TaskController@viewUserAssignedSubTask')->name('user.subtaskitem');
         Route::post('/subtask/start', 'TaskController@startSubAssignedTask')->name('subtask.start');
 
         Route::get('/tasks/task-item/issues', 'TaskController@viewUserAllIssues')->name('user.all-issues');
+        Route::get('/tasks/task-item/issues/{task_item_id}/detail', 'TaskController@viewTaskIssueDetail')->name('user.issue-detail');
         Route::get('/tasks/task-item/{item_id}/issues', 'TaskController@viewUserTaskItemIssues')->name('user.issues');
         Route::post('/tasks/task-item/issues/closed', 'TaskController@closeIssue')->name('user.issue.close');
         Route::post('/tasks/task-item/issues/resolve', 'TaskController@resolveIssue')->name('user.issue.resolve');
@@ -62,6 +65,9 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/tasks/{task_id}/{item_id}/edit', 'TaskController@editTaskItem')->name('taskitem.edit');
         Route::post('/task-item/update', 'TaskController@updateTaskItem')->name('taskitem.update');
         Route::post('/task-item/delete', 'TaskController@deleteTaskItem')->name('taskitem.delete');
+
+        Route::get('/audit-task-item', 'TaskController@alterTaskItemStatus')->name('submit-task-item');
+        Route::get('/audit-task', 'TaskController@alterTaskStatus')->name('submit-task');
 
         Route::get('/staff', 'StaffController@index')->name('staff');
         Route::get('/staff/add', 'StaffController@addNewUser')->name('staff.add');

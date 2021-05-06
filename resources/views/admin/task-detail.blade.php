@@ -78,9 +78,24 @@
                                          {!! $item->description !!}
                                          @if($item->status !== 'In-active')
                                              <div>
+                                                @if ($item->status == \App\Http\Constants\Index::COMPLETED)
+                                                <span class="badge badge-success">Completed</span>
+                                            @elseif ($item->status == \App\Http\Constants\Index::IN_PROGRESS)
+                                                <span class="badge badge-primary">In Progress</span>
+                                                @elseif ($item->status == \App\Http\Constants\Index::SUBMITTED)
+                                                <span class="badge badge-primary">Submitted</span>
+                                            @elseif($item->status == \App\Http\Constants\Index::IN_ACTIVE)
+                                                <span class="badge badge-danger">
+                                                    {{ str_replace('-', ' ', $item->status) }}
+                                                </span>
+                                            @elseif($item->status == \App\Http\Constants\Index::PENDING)
+                                                <span class="badge badge-warning">
+                                                    {{ str_replace('-', ' ', $item->status) }}
+                                                </span>
+                                            @endif
                                                  <a href="{{ route('issues', ['item_id' => $item->id, 'task_id' => $item->task_id]) }}"
                                                     class="link-black text-sm">
-                                                     <i class="fas fa-link mr-1"></i> Task Issues
+                                                     <i class="fas fa-link mr-1"></i> Task Issues ({{sizeof($item->issues)}})
                                                  </a>
                                                  <a href="{{ route('taskitem.edit', ['task_id' => $item->task_id, 'item_id' => $item->id]) }}"
                                                     class="link-black text-sm ml-3">
@@ -90,6 +105,14 @@
                                                     data-toggle="modal" data-target="#modalDeleteTaskItem{{ $item->id }}">
                                                      <i class="fas fa-trash-alt mr-1"></i> Delete
                                                  </a>
+                                                 @if ($item->status == App\Http\Constants\Index::SUBMITTED)
+                                                 <a href="{{route('submit-task-item', ['id' => $item->id, 'status' => App\Http\Constants\Index::COMPLETED])}}" class="link-black text-success text-sm ml-3">
+                                                    <i class="fas fa-check mr-1"></i> Approve
+                                                </a>
+                                                <a href="{{route('submit-task-item', ['id' => $item->id, 'status' => App\Http\Constants\Index::PENDING ])}}" class="link-black text-danger text-sm ml-3">
+                                                   <i class="fas fa-times mr-1"></i> Decline
+                                                </a>   
+                                                 @endif
                                              </div>
                                          @endif
                                      </div>
@@ -108,6 +131,14 @@
                             <a class="btn btn-default" href="#" data-toggle="modal" data-target="#modalDeleteTask{{ $task->id }}">
                                 <i class="far fa-trash-alt"></i> Delete
                             </a>
+                            @if ($task->status == App\Http\Constants\Index::SUBMITTED)
+                            <a class="btn btn-success" href="{{route('submit-task', ['id' => $item->id, 'status' => App\Http\Constants\Index::COMPLETED])}}">
+                                <i class="fas fa-check"></i> Approve
+                            </a>
+                            <a class="btn btn-danger" href="{{route('submit-task', ['id' => $item->id, 'status' => App\Http\Constants\Index::COMPLETED])}}">
+                                <i class="fas fa-times"></i> Decline
+                            </a>
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -91,6 +91,10 @@
                                                 <div>
                                                     @if ($item->status == \App\Http\Constants\Index::COMPLETED)
                                                         <span class="badge badge-success">Completed</span>
+                                                    @elseif ($item->status == \App\Http\Constants\Index::IN_PROGRESS)
+                                                        <span class="badge badge-primary">In Progress</span>
+                                                    @elseif ($item->status == \App\Http\Constants\Index::SUBMITTED)
+                                                        <span class="badge badge-primary">Submitted</span>
                                                     @elseif($item->status == \App\Http\Constants\Index::IN_ACTIVE)
                                                         <span class="badge badge-danger">
                                                             {{ str_replace('-', ' ', $item->status) }}
@@ -102,11 +106,12 @@
                                                     @endif
 
                                                     @if($item->status !== \App\Http\Constants\Index::IN_ACTIVE)
-                                                        <a href="{{ route('user.issues', $item->id) }}" class="link-black text-sm">
-                                                            <i class="fas fa-link mr-1"></i> Task Issues
-                                                        </a>
+                                    
+                                                            <a href="{{ route('user.issues', $item->id) }}" class="link-black text-sm">
+                                                                <i class="fas fa-link mr-1"></i> Task Issues ({{sizeof($item->issues)}})
+                                                            </a>
 
-                                                        @if ($item->status == "Completed")
+                                                        @if ($item->status == "Pending")
                                                             <form action="{{ route('subtask.start') }}" method="POST">
                                                                 @csrf
                                                                 <input type="hidden" name="sub_task_id" value="{{$item->id}}">
@@ -114,11 +119,12 @@
                                                                     <i class="fa fa-play text-primary"></i> Start Sub Task
                                                                 </button>
                                                             </form>
-                                                        @else
+                                                        @endif
+                                                        {{-- @if ( $item->status == "In-Progress")
                                                             <button class="text-sm">
                                                                 <i class="fa fa-bell text-success"></i> Notify Admin
                                                             </button>
-                                                        @endif
+                                                        @endif --}}
                                                     @endif
                                                 </div>
                                             </div>
@@ -129,8 +135,17 @@
 
                                 <!-- /.card-footer -->
                                 <div class="card-footer">
-                                    <button type="button" class="btn btn-primary"><i class="fas fa-bell"></i> Notify Admin</button>
-                                    {{-- <button type="button" class="btn btn-default"><i class="far fa-trash-alt"></i> Delete</button> --}}
+                                    @if($task->status == "Completed")
+                                        <span class="badge badge-success">Completed</span>
+                                    @elseif ($task->status == \App\Http\Constants\Index::SUBMITTED)
+                                        <span class="badge badge-primary">Submitted</span>
+                                    @else
+                                    <form action="{{route('user.submit-task')}}" method="POST">
+                                        <input type="hidden" name="task_id" value="{{$task->id}}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Submit Task</button>
+                                    </form>
+                                    @endif
                                 </div>
                                 <!-- /.card-footer -->
                             </div>

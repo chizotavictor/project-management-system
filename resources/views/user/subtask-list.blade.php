@@ -83,6 +83,7 @@
                             </td>
                             <td class="mailbox-name">
                                 <a href="{{ route('user.subtaskitem', ['subtask_id' => $t->id]) }}"><b>{{$t->task_indicator}}</b></a>
+                                <br> <small><i>{{$t->task->title}}</i></small>
                             </td>
                             <td class="mailbox-subject">
                                 <b>{{\App\Http\Constants\Index::fdt($t->task->start_date)}}</b> -  <b>{{\App\Http\Constants\Index::fdt($t->task->delivery_date)}}</b>
